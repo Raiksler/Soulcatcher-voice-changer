@@ -149,6 +149,14 @@ socks = ["PySocks (>=1.5.6,!=1.5.7)"]
 use_chardet_on_py3 = ["chardet (>=3.0.2,<6)"]
 
 [[package]]
+name = "speechrecognition"
+version = "3.8.1"
+description = "Library for performing speech recognition, with support for several engines and APIs, online and offline."
+category = "main"
+optional = false
+python-versions = "*"
+
+[[package]]
 name = "urllib3"
 version = "1.26.12"
 description = "HTTP library with thread-safe connection pooling, file post, and more."
@@ -176,7 +184,7 @@ multidict = ">=4.0"
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.10"
-content-hash = "4bd8ab2422fb9a815895dcb7a2e783de4b0064ed360fbb8586226226961868e0"
+content-hash = "5a5710842d1420a2f13c84d5c137a9a99ad2bd355995992d9919069d84621396"
 
 [metadata.files]
 aiogram = []
@@ -192,5 +200,6 @@ idna = []
 multidict = []
 pytz = []
 requests = []
+speechrecognition = []
 urllib3 = []
 yarl = []
