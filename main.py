@@ -1,19 +1,19 @@
 import asyncio
-from statistics import mode
+from email.message import Message
 import types
-import requests
 from aiogram import Bot, Dispatcher, types
 from aiogram.dispatcher.filters.state import StatesGroup, State
 from aiogram.contrib.fsm_storage.memory import MemoryStorage
 import env
 import responses
-import v_recognition
+import voice_works
 
 
 
 class Modes(StatesGroup):
     voice_recognition = State()
     voice_tone_change = State()
+    text_to_speech = State()
 
 
 
@@ -31,18 +31,28 @@ async def cmd_recognite(message: types.Message):
     await message.answer(responses.recognition)
     await Modes.voice_recognition.set()
 
+async def cmd_text_to_speech(message: types.Message):
+    await message.answer(responses.text_to_speech)
+    await Modes.text_to_speech.set()
 
+async def voice_recogniser(message: types.Voice):
+    await message.answer('Обработка аудио...')
+    file = voice_works.get_voice_file(message, get_name=True)                 # Скачивание голосового сообщения на сервер для дальнейшей обработки.
+    text = voice_works.voice_to_text(file[0])                     # Конвертация голосового сообщения в текст.
+    await message.answer(text)
+    await voice_works.eraser(file[1])
 
-async def voice_handler(message: types.Voice):                 # Получение голосового сообщения и скачивание его на сервер.
-    await message.answer('Voice captured!')
-    file_id = message['voice']['file_id']
-    file_path = requests.get('https://api.telegram.org/bot{token}/getFile?file_id={id}'.format(token = env.telegram_token, id = file_id)).json()['result']['file_path']
-    file_response = requests.get('https://api.telegram.org/file/bot{token}/{path}'.format(token = env.telegram_token, path = file_path))
-    if file_response.status_code == 200:
-        with open('temp/{name}'.format(name = file_path), 'wb') as dl_dir:
-            dl_dir.write(file_response.content)
-            text = v_recognition.voice_to_text(file_path)      # Конвертация голосового сообщения в текст.
-            await message.answer(text)
+async def text_to_speech_handler(message: types.Message):
+    await message.answer('Обработка аудио...')
+    file = voice_works.get_voice_file(message, get_name=True)
+    text = voice_works.voice_to_text(file[0])
+    voice_works.text_to_speech(text, file[1])
+    machine_audio = open('temp/machine/{name}.ogg'.format(name = file[1]), 'rb')        # Отправляем обработанное голосовое. Не забываем открыть.
+    await message.answer_voice(voice=machine_audio)
+    machine_audio.close()                                                               # И закрыть
+    await voice_works.eraser(file[1])          
+    
+    
 
 async def change_tone(message: types.Voice):
     await message.answer('Change tone placeholder!')
@@ -54,8 +64,10 @@ async def main():                                              # Основно�
     dp.register_message_handler(cmd_help, commands=["help"], state="*")
     dp.register_message_handler(cmd_pitch, commands=["pitch"], state="*")
     dp.register_message_handler(cmd_recognite, commands=["recognite"], state="*")
+    dp.register_message_handler(cmd_text_to_speech, commands=['resound'], state="*")
     dp.register_message_handler(change_tone, content_types=types.ContentType.VOICE, state=Modes.voice_tone_change)
-    dp.register_message_handler(voice_handler, content_types=types.ContentType.VOICE, state=Modes.voice_recognition)
+    dp.register_message_handler(voice_recogniser, content_types=types.ContentType.VOICE, state=Modes.voice_recognition)
+    dp.register_message_handler(text_to_speech_handler, content_types=types.ContentType.VOICE, state=Modes.text_to_speech)
     await dp.start_polling()                                   # Обращение к лонгполл телеграма. Если будет зарегистрирован апдейт, попадающий под фильтры одного из хэндлеров, будет активирован соответствующий хэндлер.
 
 

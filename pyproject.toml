@@ -9,6 +9,7 @@ python = "^3.10"
 aiogram = "^2.22.2"
 requests = "^2.28.1"
 SpeechRecognition = "^3.8.1"
+gTTS = "^2.2.4"
 
 [tool.poetry.dev-dependencies]
 
