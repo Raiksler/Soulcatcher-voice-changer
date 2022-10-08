@@ -40,7 +40,7 @@ async def voice_recogniser(message: types.Voice):
     file = voice_works.get_voice_file(message, get_name=True)                 # Скачивание голосового сообщения на сервер для дальнейшей обработки.
     text = voice_works.voice_to_text(file[0])                     # Конвертация голосового сообщения в текст.
     await message.answer(text)
-    await voice_works.eraser(file[1])
+    await voice_works.eraser(file[1], mode='recognite')
 
 async def text_to_speech_handler(message: types.Message):
     await message.answer('Обработка аудио...')
@@ -50,13 +50,16 @@ async def text_to_speech_handler(message: types.Message):
     machine_audio = open('temp/machine/{name}.ogg'.format(name = file[1]), 'rb')        # Отправляем обработанное голосовое. Не забываем открыть.
     await message.answer_voice(voice=machine_audio)
     machine_audio.close()                                                               # И закрыть
-    await voice_works.eraser(file[1])          
-    
-    
+    await voice_works.eraser(file[1], mode='resound')          
 
 async def change_tone(message: types.Voice):
-    await message.answer('Change tone placeholder!')
-
+    await message.answer('Обработка аудио...')
+    file = voice_works.get_voice_file(message, get_name=True)
+    await voice_works.change_pitch(file[0], file[1])
+    reworked_audio = open('temp/voice/{file}.ogg'.format(file=file[1]), 'rb')
+    await message.answer_voice(voice=reworked_audio)
+    reworked_audio.close()
+    await voice_works.eraser(file[1], mode='pitch')
 
 
 async def main():                                              # Основной модуль, он же диспетчер. Обращение к лонгполлу и регистрация хэндлеров

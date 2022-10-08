@@ -2,6 +2,7 @@ import subprocess
 import requests
 import re
 import os
+from random import choice
 import speech_recognition as sr
 from gtts import gTTS
 import env
@@ -34,11 +35,19 @@ def get_voice_file(message, get_name=False):
                 file_name = re.search(r'f.+', file_path).group(0)[0:-4]
                 return (file_path, file_name)
 
-async def eraser(file):                                     #Освобождает папку temp после обработки.
-    try:
+async def change_pitch(file, name):
+    pitch = choice([0.8, 0.85, 0.9, 1.15, 1.20, 1.25])
+    subprocess.call(['ffmpeg', '-i', 'temp/voice/{name}.oga'.format(name=name), '-af', 'asetrate=44100*{pitch},aresample=44100,atempo=1/{pitch}'.format(pitch=pitch), 'temp/voice/{name}.ogg'.format(name=name)])
+
+async def eraser(file, mode):                                     #Освобождает папку temp после обработки.
+    if mode == 'recognite':
+        os.remove('temp/voice/{file}.wav'.format(file=file))
+        os.remove('temp/voice/{file}.oga'.format(file=file))
+    elif mode == 'pitch':
+        os.remove('temp/voice/{file}.oga'.format(file=file))
+        os.remove('temp/voice/{file}.ogg'.format(file=file))
+    elif mode == 'resound':
         os.remove('temp/voice/{file}.oga'.format(file=file))
         os.remove('temp/voice/{file}.wav'.format(file=file))
         os.remove('temp/machine/{file}.mp3'.format(file=file))
         os.remove('temp/machine/{file}.ogg'.format(file=file))
-    except FileNotFoundError:
-        pass
