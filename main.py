@@ -10,7 +10,7 @@ import voice_works
 
 
 
-class Modes(StatesGroup):
+class Modes(StatesGroup):                                       # Три стейта - три режима работы бота.
     voice_recognition = State()
     voice_tone_change = State()
     text_to_speech = State()
@@ -39,18 +39,26 @@ async def voice_recogniser(message: types.Voice):
     await message.answer('Обработка аудио...')
     file = voice_works.get_voice_file(message, get_name=True)                 # Скачивание голосового сообщения на сервер для дальнейшей обработки.
     text = voice_works.voice_to_text(file[0])                     # Конвертация голосового сообщения в текст.
-    await message.answer(text)
-    await voice_works.eraser(file[1], mode='recognite')
+    if text == "Empty v_msg":
+        await message.answer('Голосовое сообщение не содержит слов или слова не распознаны.')
+        await voice_works.eraser(file[1], mode='recognite')
+    else:
+        await message.answer(text)
+        await voice_works.eraser(file[1], mode='recognite')
 
 async def text_to_speech_handler(message: types.Message):
     await message.answer('Обработка аудио...')
     file = voice_works.get_voice_file(message, get_name=True)
     text = voice_works.voice_to_text(file[0])
-    voice_works.text_to_speech(text, file[1])
-    machine_audio = open('temp/machine/{name}.ogg'.format(name = file[1]), 'rb')        # Отправляем обработанное голосовое. Не забываем открыть.
-    await message.answer_voice(voice=machine_audio)
-    machine_audio.close()                                                               # И закрыть
-    await voice_works.eraser(file[1], mode='resound')          
+    if text == "Empty v_msg":
+        await message.answer('Голосовое сообщение не содержит слов или слова не распознаны.')
+        await voice_works.eraser(file[1], mode='recognite')
+    else:
+        voice_works.text_to_speech(text, file[1])
+        machine_audio = open('temp/machine/{name}.ogg'.format(name = file[1]), 'rb')        # Отправляем обработанное голосовое. Не забываем открыть.
+        await message.answer_voice(voice=machine_audio)
+        machine_audio.close()                                                               # И закрыть
+        await voice_works.eraser(file[1], mode='resound')          
 
 async def change_tone(message: types.Voice):
     await message.answer('Обработка аудио...')
