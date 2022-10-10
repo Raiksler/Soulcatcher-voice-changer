@@ -23,6 +23,9 @@ async def cmd_start(message: types.Message):
 async def cmd_help(message: types.Message):
     await message.answer(responses.help)
 
+async def cmd_changelog(message: types.Message):
+    await message.answer(responses.changelog)
+
 async def cmd_pitch(message: types.Message):
     await message.answer(responses.pitch)
     await Modes.voice_tone_change.set()
@@ -36,35 +39,40 @@ async def cmd_text_to_speech(message: types.Message):
     await Modes.text_to_speech.set()
 
 async def voice_recogniser(message: types.Voice):
-    await message.answer('Обработка аудио...')
+    status_msg = await message.answer('Обработка аудио...')
     file = voice_works.get_voice_file(message, get_name=True)                 # Скачивание голосового сообщения на сервер для дальнейшей обработки.
     text = voice_works.voice_to_text(file[0])                     # Конвертация голосового сообщения в текст.
     if text == "Empty v_msg":
+        await status_msg.delete()
         await message.answer('Голосовое сообщение не содержит слов или слова не распознаны.')
         await voice_works.eraser(file[1], mode='recognite')
     else:
+        await status_msg.delete()
         await message.answer(text)
         await voice_works.eraser(file[1], mode='recognite')
 
 async def text_to_speech_handler(message: types.Message):
-    await message.answer('Обработка аудио...')
+    status_msg = await message.answer('Обработка аудио...')
     file = voice_works.get_voice_file(message, get_name=True)
     text = voice_works.voice_to_text(file[0])
     if text == "Empty v_msg":
+        await status_msg.delete()
         await message.answer('Голосовое сообщение не содержит слов или слова не распознаны.')
         await voice_works.eraser(file[1], mode='recognite')
     else:
         voice_works.text_to_speech(text, file[1])
         machine_audio = open('temp/machine/{name}.ogg'.format(name = file[1]), 'rb')        # Отправляем обработанное голосовое. Не забываем открыть.
+        await status_msg.delete()
         await message.answer_voice(voice=machine_audio)
         machine_audio.close()                                                               # И закрыть
         await voice_works.eraser(file[1], mode='resound')          
 
 async def change_tone(message: types.Voice):
-    await message.answer('Обработка аудио...')
+    status_msg = await message.answer('Обработка аудио...')
     file = voice_works.get_voice_file(message, get_name=True)
     await voice_works.change_pitch(file[0], file[1])
     reworked_audio = open('temp/voice/{file}.ogg'.format(file=file[1]), 'rb')
+    await status_msg.delete()
     await message.answer_voice(voice=reworked_audio)
     reworked_audio.close()
     await voice_works.eraser(file[1], mode='pitch')
@@ -73,6 +81,7 @@ async def change_tone(message: types.Voice):
 async def main():                                              # Основной модуль, он же диспетчер. Обращение к лонгполлу и регистрация хэндлеров
     dp.register_message_handler(cmd_start, commands=["start"], state="*")
     dp.register_message_handler(cmd_help, commands=["help"], state="*")
+    dp.register_message_handler(cmd_changelog, commands=["changelog"], state ="*")
     dp.register_message_handler(cmd_pitch, commands=["pitch"], state="*")
     dp.register_message_handler(cmd_recognite, commands=["recognite"], state="*")
     dp.register_message_handler(cmd_text_to_speech, commands=['resound'], state="*")
