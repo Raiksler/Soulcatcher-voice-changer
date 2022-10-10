@@ -6,6 +6,11 @@ RUN apt -y install ffmpeg
 
 ADD . /Soulcatcher
 WORKDIR /Soulcatcher
+RUN mkdir temp
+WORKDIR /temp
+RUN mkdir voice
+RUN mkdir machine
+WORKDIR ..
 RUN poetry install
 
 ENTRYPOINT poetry run python3 main.py
