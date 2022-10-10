@@ -7,7 +7,7 @@ RUN apt -y install ffmpeg
 ADD . /Soulcatcher
 WORKDIR /Soulcatcher
 RUN mkdir temp
-WORKDIR /temp
+WORKDIR ./temp
 RUN mkdir voice
 RUN mkdir machine
 WORKDIR ..
