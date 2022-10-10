@@ -1,5 +1,4 @@
 import asyncio
-from email.message import Message
 import types
 from aiogram import Bot, Dispatcher, types
 from aiogram.dispatcher.filters.state import StatesGroup, State
