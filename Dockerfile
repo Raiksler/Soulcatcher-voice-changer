@@ -10,7 +10,7 @@ RUN mkdir temp
 WORKDIR ./temp
 RUN mkdir voice
 RUN mkdir machine
-WORKDIR ..
+WORKDIR /Soulcatcher
 RUN poetry install
 
 ENTRYPOINT poetry run python3 main.py
