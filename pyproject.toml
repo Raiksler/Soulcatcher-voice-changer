@@ -11,6 +11,7 @@ requests = "^2.28.1"
 SpeechRecognition = "^3.8.1"
 gTTS = "^2.2.4"
 emoji = "^2.1.0"
+translators = {git = "https://github.com/Raiksler/Translators_for_Soulcatcher.git"}
 
 [tool.poetry.dev-dependencies]
 
