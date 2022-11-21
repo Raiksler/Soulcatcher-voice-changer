@@ -30,43 +30,43 @@ class Modes(StatesGroup):                                       # Стейты �
 
 
 async def cmd_start(message: types.Message):
-    await message.answer(responses.start)
+    await message.answer(responses.Responses(message['from']['language_code']).start)
 
 async def cmd_help(message: types.Message):
-    await message.answer(responses.help)
+    await message.answer(responses.Responses(message['from']['language_code']).help)
 
 async def cmd_changelog(message: types.Message):
-    await message.answer(responses.changelog)
+    await message.answer(responses.Responses(message['from']['language_code']).changelog)
 
 async def cmd_pitch(message: types.Message):
-    await message.answer(responses.pitch)
+    await message.answer(responses.Responses(message['from']['language_code']).pitch)
     await Modes.voice_tone_change.set()
 
 async def cmd_recognite(message: types.Message):
-    await message.answer(responses.recognition)
+    await message.answer(responses.Responses(message['from']['language_code']).recognition)
 
 async def cmd_text_to_speech(message: types.Message):
-    await message.answer(responses.text_to_speech)
+    await message.answer(responses.Responses(message['from']['language_code']).text_to_speech)
     await Modes.text_to_speech.set()
 
 async def cmd_translate_text(message: types.Message):
-    await message.answer(responses.translate_text)
+    await message.answer(responses.Responses(message['from']['language_code']).translate_text)
     await Modes.translate_text.set()
 
 async def cmd_recognite_lg_choice(message: types.Message):
-    await message.answer(responses.chosen_lg_to_recognite(message.text))
+    await message.answer(responses.chosen_lg_to_recognite(command=message.text, user_lang=message['from']['language_code']))
     modes = {"/r_ru" : Modes.voice_recognition_ru.set, "/r_en" : Modes.voice_recognition_en.set, "/r_fr" : Modes.voice_recognition_fr.set, "/r_de" : Modes.voice_recognition_de.set, "/r_id" : Modes.voice_recognition_id.set, "/r_pt" : Modes.voice_recognition_pt.set, "/r_es" : Modes.voice_recognition_es.set, "/r_in" : Modes.voice_recognition_hi.set, "/r_tr" : Modes.voice_recognition_tr.set}
     await modes[message.text]()
 
 async def voice_recogniser(message: types.Voice):
     languages = {'Modes:voice_recognition_ru' : 'ru-RU', 'Modes:voice_recognition_en' : 'en-US', 'Modes:voice_recognition_fr' : 'fr-FR', 'Modes:voice_recognition_de' : 'de_DE' ,'Modes:voice_recognition_id' : 'id-ID', 'Modes:voice_recognition_pt' : 'pt-PT', 'Modes:voice_recognition_es' : 'es-ES', 'Modes:voice_recognition_hi' : 'hi-IN', 'Modes:voice_recognition_tr' : 'tr'}
     recognition_lang = languages[await storage.get_state(user=message.from_id, chat=message.chat.id)]   # Достаем стейт, для выбора языка распознавания.
-    status_msg = await message.answer('Обработка аудио...')
+    status_msg = await message.answer(responses.Responses(message['from']['language_code']).processing_audio)
     file = voice_works.get_voice_file(message, get_name=True)                 # Скачивание голосового сообщения на сервер для дальнейшей обработки.
     text = voice_works.voice_to_text(file[0], language=recognition_lang)                     # Конвертация голосового сообщения в текст.
     if text == "Empty v_msg":
         await status_msg.delete()
-        await message.answer('Голосовое сообщение не содержит слов или слова не распознаны.')
+        await message.answer(responses.Responses(message['from']['language_code']).translate_text)
         await voice_works.eraser(file[1], mode='recognite')
     else:
         await status_msg.delete()
@@ -74,12 +74,12 @@ async def voice_recogniser(message: types.Voice):
         await voice_works.eraser(file[1], mode='recognite')
 
 async def text_to_speech_handler(message: types.Message):
-    status_msg = await message.answer('Обработка аудио...')
+    status_msg = await message.answer(responses.Responses(message['from']['language_code']).processing_audio)
     file = voice_works.get_voice_file(message, get_name=True)
     text = voice_works.voice_to_text(file[0])
     if text == "Empty v_msg":
         await status_msg.delete()
-        await message.answer('Голосовое сообщение не содержит слов или слова не распознаны.')
+        await message.answer(responses.Responses(message['from']['language_code']).translate_text)
         await voice_works.eraser(file[1], mode='recognite')
     else:
         voice_works.text_to_speech(text, file[1])
@@ -90,7 +90,7 @@ async def text_to_speech_handler(message: types.Message):
         await voice_works.eraser(file[1], mode='resound')          
 
 async def change_tone(message: types.Voice):
-    status_msg = await message.answer('Обработка аудио...')
+    status_msg = await message.answer(responses.Responses(message['from']['language_code']).processing_audio)
     file = voice_works.get_voice_file(message, get_name=True)
     await voice_works.change_pitch(file[0], file[1])
     reworked_audio = open('temp/voice/{file}.ogg'.format(file=file[1]), 'rb')
@@ -100,7 +100,7 @@ async def change_tone(message: types.Voice):
     await voice_works.eraser(file[1], mode='pitch')
 
 async def translate_text(message: types.Message):
-    status_msg = await message.answer('Идет перевод текста...')
+    status_msg = await message.answer(responses.Responses(message['from']['language_code']).translation_proceessing)
     result = await translate_works.translate(text=message.text, to_language=message['from']['language_code'])
     if result['code'] == "en":
         result['code'] = "gb"
