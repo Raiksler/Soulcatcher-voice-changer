@@ -5,6 +5,7 @@ import os
 from random import choice
 import speech_recognition as sr
 from gtts import gTTS
+import gtts
 import env
 
 def voice_to_text(file, language):                                                # Конвертация аудиосообщения в формат wav и его распознавание.
@@ -19,8 +20,12 @@ def voice_to_text(file, language):                                              
     except sr.UnknownValueError:
         return "Empty v_msg"
 
-def text_to_speech(text, name):
-    var = gTTS(text=text, lang='ru')
+def text_to_speech(text, name, language):
+    sup_langs = gtts.lang.tts_langs()
+    if language not in sup_langs:
+        print(1)
+        language = 'en'
+    var = gTTS(text=text, lang=language)
     var.save('temp/machine/{name}.mp3'.format(name = name))
     subprocess.call(['ffmpeg', '-i', 'temp/machine/{name}.mp3'.format(name = name), '-c:a', 'libopus', 'temp/machine/{name}.ogg'.format(name = name)])
 

@@ -1,5 +1,6 @@
 from emoji import emojize
 import json
+import gtts
 
 
 
@@ -11,9 +12,9 @@ class Responses:
             self.pitch = emojize(":check_mark: Выбран режим смены тональности голоса.\n\nБот изменит тональность любого входящего голосового сообщения в случайном диапазоне.")
             self.recognition = emojize(":check_mark: Выбран режим распознавания голоса.\n\nДля начала работы, выберите язык распознаваемых сообщений. Доступны следующие варианты:\n\n:Russia: /r_ru - русский\n:United_Kingdom: /r_en - английский\n:France: /r_fr - французский\n:Germany: /r_de - немецкий\n:Indonesia: /r_id - индонезийский\n:Portugal: /r_pt - португальский\n:Spain: /r_es - испанский\n:India: /r_in - хинди\n:Turkey: /r_tr - турецкий")
             self.chosen_lg_to_recognite = emojize("Вы выбрали {lang} язык для распознавания. Бот попытается распознать текст любого входящего голосового сообщения.")
-            self.text_to_speech = emojize(":check_mark: Выбран режим машинной переозвучки.\n\nБот попытается распознать текст любого входящего голосового сообщения и вернет машинно переозвученный вариант.\n\n'Анонимность - все, качество - ничто!' (с)")
+            self.text_to_speech = emojize(":check_mark: Режим машинной переозвучки запущен. Бот обработает любое записанное или пересланное голосовое сообщение.")
             self.translate_text = emojize(":check_mark: Выбран режим перевода текста.\n\nБот попытается перевести текст любого входящего текстового сообщения и вернет переведенный вариант.")
-            self.changelog = emojize("Soulcatcher 1.2:\n\n:check_mark: Добавлен режим перевода текста, подробности по команде /help\n\n:check_mark: Распознавание речи, отныне, возможно с девяти языков. Подробности по команде /recognite.\n\n:check_mark: Поддержка русского и английского языков для интерфейса бота. Язык автоматически подстраивается под системный язык пользователя.")
+            self.changelog = emojize("Soulcatcher 1.2:\n\n:check_mark: Добавлен режим перевода текста, подробности по команде /help\n\n:check_mark: Распознавание речи, отныне, возможно с девяти языков. Подробности по команде /recognite.\n\n:check_mark: Поддержка русского и английского языков для интерфейса бота. Язык автоматически подстраивается под системный язык пользователя.\n\n:check_mark: Поддержка мультиязычности для машинной переозвучки.")
             self.processing_audio = "Обработка аудио..."
             self.empty_v_msg_error = "Голосовое сообщение не содержит слов или слова не распознаны."
             self.translation_proceessing = 'Идет перевод текста...'
@@ -25,9 +26,9 @@ class Responses:
             self.pitch = emojize(":check_mark: Pitch change mode selected.\n\nBot will change pitch of any incoming voice message in a random range.")            
             self.recognition = emojize(":check_mark: Voice recognition mode selected.\n\nTo get started, select the language of the messages to be recognized. The following options are available:\n\n:Russia: /r_ru - Russian\n:United_Kingdom: /r_en - English\n:France: /r_fr - French\n:Germany: /r_de - Deutsch\n:Indonesia: /r_id - Indonesian\n:Portugal: /r_pt - Portuguese\n:Spain: /r_es - Spanish\n:India: /r_in - Hindi\n:Turkey: /r_tr - Turkish")            
             self.chosen_lg_to_recognite = emojize("You have chosen a {lang} language for recognition. Bot will try to recognize text of any incoming voice message.")
-            self.text_to_speech = emojize(":check_mark: Machine re-sound mode selected.\n\nBot will try to recognize text of any incoming voice message and return a machine re-sounded version.\n\n'Anonymity is everything, quality is nothing!' (c)")
+            self.text_to_speech = emojize(":check_mark: Machine re-sound mode is running. Bot will process any recorded or forwarded voice message.")            
             self.translate_text = emojize(":check_mark: Text translation mode selected.\n\nBot will attempt to translate text of any incoming text message and return translated version.")
-            self.changelog = emojize("Soulcatcher 1.2:\n\n:check_mark: Added text translation mode, details with /help\n\n:check_mark: Speech recognition, now available from nine languages. Details with /recognite command.\n\n:check_mark: Support for Russian and English languages for the bot interface. The language automatically adjusts to the user's system language.")
+            self.changelog = emojize("Soulcatcher 1.2:\n\n:check_mark: Added text translation mode, details with /help\n\n:check_mark: Speech recognition, now available from nine languages. Details with /recognite command.\n\n:check_mark: Support for Russian and English languages for the bot interface. The language automatically adjusts to the user's system language.\n\n:check_mark: Multilingual support for machine re-sound mode.")
             self.processing_audio = "Processing audio..."
             self.empty_v_msg_error = "Voice message does not contain words or the words are not recognized."
             self.translation_proceessing = 'Translation in process...'
@@ -58,3 +59,16 @@ def chosen_lg_to_recognite(user_lang, command):                  # Формир�
         languages = {"/r_ru" : "russian", "/r_en" : "english", "/r_fr" : "french", "/r_de" : "deutsch", "/r_id" : "indonesian", "/r_pt" : "portuguese", "/r_es" : "spanish", "/r_in" : "hindi", "/r_tr" : "turkish"}
         result = emojize("{flag} The language selected for recognition is {lang}. Bot will try to recognize text of any incoming voice message.".format(flag=flags[command], lang=languages[command]))
     return result
+
+def chose_lg_to_resound(code):
+    sup_langs = gtts.lang.tts_langs()
+    with open('country_codes.json', 'r') as file:
+        country_list = json.load(file)
+    country_name = country_list[0][code]
+    if code == 'ru':
+        message = emojize(":check_mark: Выбран режим машинной переозвучки.\n\nБот попытается распознать текст любого входящего голосового сообщения и вернет машинно переозвученный вариант.\n\n'Анонимность - все, качество - ничто!' (с)\n\nДля продолжения, выберите языкыковой пакет синтезатора речи.\n\n/rs_native - использовать языковой пакет вашей системы для синтеза речи. Бот распознал язык вашей системы как русский :Russia:.\n/rs_english - использовать английский языковой пакет для синтеза речи.")
+    elif code != 'ru' and code in sup_langs:
+        message = emojize(":check_mark: Machine re-sound mode selected.\n\nBot will try to recognize text of any incoming voice message and return a machine re-sounded version.\n\n'Anonymity is everything, quality is nothing!' (с)\n\nTo continue, select speech synthesizer language pack.\n\n/rs_native - Use your system language pack for speech synthesis. Bot recognized your system language as :{language}:.\n/rs_english - Use english language pack for speech synthesis.".format(language=country_name))
+    elif code != 'ru' and code in sup_langs:
+        message = emojize(":check_mark: Machine re-sound mode selected.\n\nBot will try to recognize text of any incoming voice message and return a machine re-sounded version.\n\n'Anonymity is everything, quality is nothing!' (с)\n\nTo continue, select speech synthesizer language pack.\n\nBot recognized your system language as :{language}:. Unfortunately, this language is not available for speech synthesis. You can try using the package in english.\n/rs_english - Use english language pack for speech synthesis.".format(language=country_name))
+    return message
