@@ -42,6 +42,7 @@ class Responses:
         return self.response
 
 def format_translation(translation):               # Формирование переведенного сообщения с флажком страны и текстом.
+    print(translation)
     code = translation['code']
     with open('country_codes.json', 'r') as file:
         country_list = json.load(file)
@@ -67,8 +68,10 @@ def chose_lg_to_resound(code):
     country_name = country_list[0][code]
     if code == 'ru':
         message = emojize(":check_mark: Выбран режим машинной переозвучки.\n\nБот попытается распознать текст любого входящего голосового сообщения и вернет машинно переозвученный вариант.\n\n'Анонимность - все, качество - ничто!' (с)\n\nДля продолжения, выберите языкыковой пакет синтезатора речи.\n\n/rs_native - использовать языковой пакет вашей системы для синтеза речи. Бот распознал язык вашей системы как русский :Russia:.\n/rs_english - использовать английский языковой пакет для синтеза речи.")
+    elif code == 'en':
+        message = emojize(":check_mark: Machine re-sound mode selected.\n\nBot will try to recognize text of any incoming voice message and return a machine re-sounded version.\n\n'Anonymity is everything, quality is nothing!' (с)\n\nTo continue, select speech synthesizer language pack.\n\n/rs_native - Use your system language pack for speech synthesis. Bot recognized your system language as english :{language}:.".format(language=country_name))
     elif code != 'ru' and code in sup_langs:
         message = emojize(":check_mark: Machine re-sound mode selected.\n\nBot will try to recognize text of any incoming voice message and return a machine re-sounded version.\n\n'Anonymity is everything, quality is nothing!' (с)\n\nTo continue, select speech synthesizer language pack.\n\n/rs_native - Use your system language pack for speech synthesis. Bot recognized your system language as :{language}:.\n/rs_english - Use english language pack for speech synthesis.".format(language=country_name))
-    elif code != 'ru' and code in sup_langs:
+    elif code != 'ru' and code not in sup_langs:
         message = emojize(":check_mark: Machine re-sound mode selected.\n\nBot will try to recognize text of any incoming voice message and return a machine re-sounded version.\n\n'Anonymity is everything, quality is nothing!' (с)\n\nTo continue, select speech synthesizer language pack.\n\nBot recognized your system language as :{language}:. Unfortunately, this language is not available for speech synthesis. You can try using the package in english.\n/rs_english - Use english language pack for speech synthesis.".format(language=country_name))
     return message
