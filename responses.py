@@ -46,7 +46,10 @@ def format_translation(translation):               # Формирование п
     code = translation['code']
     with open('country_codes.json', 'r') as file:
         country_list = json.load(file)
-    country_name = country_list[0][code]
+    try:
+        country_name = country_list[0][code]
+    except KeyError:
+        country_name = code
     result = ":{country}: {text}".format(country=country_name, text=translation['text'])
     print(country_name)
     return result
