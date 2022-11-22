@@ -18,7 +18,7 @@
 <p>Распознавание речи реализовано через библиотеку <a href="https://pypi.org/project/SpeechRecognition/">SpeechRecognition</a>. С помощью методов даннной библиотеки, происходит применение технологии Google Speech-to-Text.</p>
 <p>Модуляция речи производится с помощью библиотеки <a href="https://pypi.org/project/gTTS/">gTTS</a></p>
 <p>Для изменения тональности голосовых сообщений, применяется пакет <a href="https://ffmpeg.org/ffmpeg">FFmpeg</a>. Обращение к данному пакету, происходит путем вызова паралельного процесса на сервере, с помощью нативной библиотеки Subprocess</p>
-<p>Перевод текста осуществляется через библиотеку <a href="https://pypi.org/project/translators/">Translators, с помощью API Google Translate.</a> </p>
+<p>Перевод текста осуществляется через библиотеку <a href="https://pypi.org/project/translators/">Translators</a>, с помощью API Google Translate.</p>
 <p>Менеджмент зависимостей обеспечивается посредством пакета poetry.</p>
 
 <h1>Развертывание</h1>
